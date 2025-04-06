@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="001" author="vitor.mota">
+        <createTable tableName="energy_generator">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fuel_type" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="generation_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="power_kw" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="company_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="connection_voltage" type="DECIMAL(10,2)"/>
+            <column name="connection_name" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
