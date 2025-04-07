@@ -1,54 +1,57 @@
-# React + TypeScript + Vite
+# Projeto React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A aplicação consome uma API que fornece informações sobre os principais geradores de energia do Brasil.
 
-Currently, two official plugins are available:
+Este projeto utiliza **React**, **TypeScript** e **Vite** para fornecer um ambiente rápido e eficiente para desenvolvimento.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tecnologias Utilizadas
 
-## Expanding the ESLint configuration
+- **React** - Biblioteca para construção de interfaces
+- **TypeScript** - Tipagem estática para JavaScript
+- **Vite** - Build tool rápida e moderna
+- **MUI** - Biblioteca de componentes para UI
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Instalação
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. Clone o repositório:
+
+   ```sh
+   git clone https://github.com/ovitormota/energytracker.git
+   cd energytracker
+   ```
+
+2. Instale as dependências:
+   ```sh
+   npm install
+   # ou
+   yarn install
+   ```
+
+## ▶️ Executando o Projeto
+
+Para rodar o projeto localmente, utilize:
+
+```sh
+npm run dev
+# ou
+yarn dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O projeto estará disponível em `http://localhost:5173/`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Estrutura do Projeto
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
 ```
+📂 src
+ ├── 📂 components     # Componentes reutilizáveis
+ ├── 📂 pages          # Páginas do aplicativo
+ ├── 📂 services       # Comunicação com API
+ ├── 📂 types          # Definição de tipos TypeScript
+ ├── 📂 utils          # Funções utilitárias
+ ├── 📜 main.tsx       # Ponto de entrada da aplicação
+ ├── 📜 App.tsx        # Componente principal
+```
+
+## 📄 Licença
+
+Este projeto é distribuído sob a licença MIT.
