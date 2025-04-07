@@ -7,6 +7,11 @@ import java.io.InputStreamReader
 import java.math.BigDecimal
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -24,13 +29,33 @@ class EnergyGeneratorScheduler(private val repository: EnergyGeneratorRepository
     @Transactional
     fun fetchAndProcessCsv() {
         val startTime = System.currentTimeMillis()
-        logger.info("📥 Iniciando download e processamento do CSV...")
+        logger.info("Iniciando download e processamento do CSV...")
 
         try {
             URL(csvUrl).openStream().use { inputStream ->
                 BufferedReader(InputStreamReader(inputStream, StandardCharsets.ISO_8859_1)).use {
                         reader ->
                     val header = reader.readLine()?.split(";")?.map { it.trim() } ?: return
+
+                    // Obtém a primeira linha para extrair a data do novo conjunto de dados
+                    val firstLine = reader.readLine()
+                    val firstRow =
+                            firstLine?.split(";")?.map { it.trim() }?.let { header.zip(it).toMap() }
+                    val newDatasetDate = parseDate(firstRow?.get("DatGeracaoConjuntoDados"))
+
+                    // Busca a data mais recente armazenada no banco
+                    val latestStoredDate =
+                            repository.findTopByOrderByDatasetGeneratedAtDesc()?.datasetGeneratedAt
+
+                    if (latestStoredDate != null &&
+                                    newDatasetDate.isAfter(latestStoredDate) == false
+                    ) {
+                        logger.info(
+                                "O CSV já foi processado anteriormente. Nenhum novo dado será salvo."
+                        )
+                        return
+                    }
+
                     val batch = mutableListOf<EnergyGenerator>()
 
                     reader.lineSequence().forEach { line ->
@@ -65,7 +90,10 @@ class EnergyGeneratorScheduler(private val repository: EnergyGeneratorRepository
                 try {
                     repository.save(generator)
                 } catch (ex: Exception) {
-                    logger.error("Falha ao salvar registro: ${generator.name} - ${ex.message}", ex)
+                    logger.error(
+                            "Falha ao salvar registro: ${generator.name} - ${ex.message}",
+                            ex
+                    )
                 }
             }
         }
@@ -90,7 +118,8 @@ class EnergyGeneratorScheduler(private val repository: EnergyGeneratorRepository
                     companyName = row["NomEmpresaConexao"] ?: "N/A",
                     connectionVoltage = parseBigDecimal(row["MdaTensaoConexao"]),
                     connectionName = row["NomConexao"] ?: "N/A",
-                    status = row["DscSituacaoObra"] ?: "N/A"
+                    status = row["DscSituacaoObra"] ?: "N/A",
+                    datasetGeneratedAt = parseDate(row["DatGeracaoConjuntoDados"])
             )
         } catch (e: Exception) {
             logger.warn("Erro ao processar linha: ${e.message}")
@@ -101,5 +130,19 @@ class EnergyGeneratorScheduler(private val repository: EnergyGeneratorRepository
     /** Converte uma String para BigDecimal, tratando valores nulos e separadores de milhar. */
     private fun parseBigDecimal(value: String?): BigDecimal {
         return value?.replace(",", ".")?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+    }
+
+    /** Converte a string da coluna DatGeracaoConjuntoDados em um objeto Instant */
+    private fun parseDate(dateString: String?): Instant {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+            dateString?.let {
+                LocalDate.parse(it, formatter).atStartOfDay(ZoneId.systemDefault()).toInstant()
+            }
+                    ?: Instant.now()
+        } catch (e: Exception) {
+            logger.warn("Erro ao converter data: $dateString, usando data atual.")
+            Instant.now()
+        }
     }
 }

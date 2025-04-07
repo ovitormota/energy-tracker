@@ -11,4 +11,10 @@ interface EnergyGeneratorRepository : JpaRepository<EnergyGenerator, UUID> {
      * @return Lista contendo os 5 geradores com maior potência.
      */
     fun findTop5ByOrderByPowerKwDesc(): List<EnergyGenerator>
+
+    /**
+     * Obtém o registro mais recente com base na data de geração do conjunto de dados (datasetGeneratedAt).
+     * @return O gerador de energia mais recente ou null se não houver registros.
+     */
+    fun findTopByOrderByDatasetGeneratedAtDesc(): EnergyGenerator?
 }
